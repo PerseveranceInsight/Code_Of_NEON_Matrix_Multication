@@ -93,6 +93,23 @@ int main(int argc, char* argv[])
                                 *(ptr_f+3));
     }
 
+    memset(matrix_r, 0, sizeof(float)*16);
+    mat_mul_c_procedure(matrix_a, matrix_b, matrix_r);
+    ex_log(LOG_DEBUG, "matrix_r");
+    printf("\nmethod 4: matrix_r col order\n");
+    for (int i = 0; i<4; i++)
+    {
+        ptr_f = matrix_r + i*4;
+        ex_log(LOG_DEBUG, "%f %f %f %f", *ptr_f,
+                                         (*ptr_f+1),
+                                         (*ptr_f+2),
+                                         (*ptr_f+3));
+        printf("%f %f %f %f\n", *ptr_f,
+                                *(ptr_f+1),
+                                *(ptr_f+2),
+                                *(ptr_f+3));
+    }
+
     FUNC_EXIT_LOG;
     return 0;
 }

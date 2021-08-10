@@ -1,4 +1,6 @@
 #include <android/log.h>
+#ifndef __ANDROID_ARM_UTIL_H__
+#define __ANDROID_ARM_UTIL_H__
 #ifdef __DEBUG__
 #define LOG_ERROR       ANDROID_LOG_ERROR
 #define LOG_INFO        ANDROID_LOG_INFO
@@ -9,4 +11,7 @@
 #define FUNC_EXIT_LOG           ex_log(LOG_DEBUG, "%s leaves", __func__);
 #else
 #define ex_log(LOG_LEVEL, x...) do {} while (0)
+#endif
+
+double now_ns(void);
 #endif
