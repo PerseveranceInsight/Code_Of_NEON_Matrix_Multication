@@ -3,6 +3,70 @@
 #include "neon_mat_mul.h"
 #include "android_arm_util.h"
 
+/*
+ *   $$
+ *   A = \begin{bmatrix}
+ *   a_{00}, a_{01}, a_{02}, a_{03}\\
+ *   a_{10}, a_{11}, a_{12}, a_{13}\\
+ *   a_{20}, a_{21}, a_{22}, a_{23}\\
+ *   a_{30}, a_{31}, a_{32}, a_{33}
+ *   \end{bmatrix}
+ *   $$
+ *   
+ *   $$
+ *   B = \begin{bmatrix}
+ *   b_{00}, b_{01}, b_{02}, b_{03}\\
+ *   b_{10}, b_{11}, b_{12}, b_{13}\\
+ *   b_{20}, b_{21}, b_{22}, b_{23}\\
+ *   b_{30}, b_{31}, b_{32}, b_{33}
+ *   \end{bmatrix}
+ *   $$
+ *   
+ *   $$
+ *   R = \begin{bmatrix}
+ *   r_{00}, r_{01}, r_{02}, r_{03}\\
+ *   r_{10}, r_{11}, r_{12}, r_{13}\\
+ *   r_{20}, r_{21}, r_{22}, r_{23}\\
+ *   r_{30}, r_{31}, r_{32}, r_{33}
+ *   \end{bmatrix}
+ *   $$
+ *   
+ *   $$
+ *   \begin{equation}
+ *   \begin{split}
+ *   \tilde{a}_{0} &= (a_{30}, a_{20}, a_{10}, a_{00}) \\
+ *   \tilde{a}_{1} &= (a_{31}, a_{21}, a_{11}, a_{01}) \\
+ *   \tilde{a}_{2} &= (a_{32}, a_{22}, a_{12}, a_{02}) \\
+ *   \tilde{a}_{3} &= (a_{33}, a_{23}, a_{13}, a_{03}) \\
+ *   \tilde{b}_{0} &= (b_{30}, b_{20}, b_{10}, b_{00}) \\
+ *   \tilde{b}_{1} &= (b_{31}, b_{21}, b_{11}, b_{01}) \\
+ *   \tilde{b}_{2} &= (b_{32}, b_{22}, b_{12}, b_{02}) \\
+ *   \tilde{b}_{3} &= (b_{33}, b_{23}, b_{13}, b_{03}) \\
+ *   \tilde{r}_{0} &= (r_{30}, r_{20}, r_{10}, r_{00}) \\
+ *   \tilde{r}_{1} &= (r_{31}, r_{21}, r_{11}, r_{01}) \\
+ *   \tilde{r}_{2} &= (r_{32}, r_{22}, r_{12}, r_{02}) \\
+ *   \tilde{r}_{3} &= (r_{33}, r_{23}, r_{13}, r_{03}) \\
+ *   \end{split}
+ *   \end{equation}
+ *   $$
+ *   
+ *   $$
+ *   r_{00} = a_{00}b_{00} + a_{01}b_{10} + a_{02}b_{20} + a_{03}b_{30}
+ *   $$
+ *   
+ *   $$
+ *   \begin{eqaution}
+ *   \begin{split}
+ *   \tilde{a}_{0} \times \text{low }(\tilde{b}_{0},0) &= a_{30}b_{00} + a_{20}b_{00} + a_{10}b_{00} + a_{00}b_{00} \\
+ *   \tilde{a}_{1} \times \text{low }(\tilde{b}_{0},1) &= a_{31}b_{10} + a_{21}b_{10} + a_{11}b_{10} + a_{01}b_{10} \\
+ *   \tilde{a}_{2} \times \text{high}(\tilde{b}_{0},0) &= a_{32}b_{20} + a_{22}b_{20} + a_{12}b_{20} + a_{02}b_{20} \\
+ *   \tilde{a}_{3} \times \text{high}(\tilde{b}_{0},1) &= a_{33}b_{30} + a_{23}b_{30} + a_{13}b_{30} + a_{03}b_{30} \\
+ *   \tilde{r}_{0}                                     &=    r_{30}         r_{20}         r_{10}         r_{00}
+ *   \end{split}
+ *   \end{equation}
+ *   $$
+ */
+
 void neon_mat_mul(const float *matrix_a, const float *matrix_b, float *matrix_r)
 {
     FUNC_ENTRANCE_LOG;
